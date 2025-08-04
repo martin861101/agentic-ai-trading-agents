@@ -4,6 +4,45 @@ This project implements an **Agentic AI stock trading system**, built with a mod
 
 ---
 
+## 🚀 Features
+
+- **Microservice AI Agents:** Each agent (ChartAnalyst, RiskManager, MacroForecaster, etc.) is a containerized FastAPI service.
+- **Event Bus Architecture:** Agents communicate and coordinate via Redis Pub/Sub for low-latency, event-driven workflows.
+- **Central Orchestrator:** Aggregates agent signals, applies business logic, logs outcomes, and triggers platform actions.
+- **Full Logging & Analytics:** PostgreSQL (or TimescaleDB) stores all predictions, agent outputs, and trade outcomes for analytics and dashboards.
+- **Real-time Frontend:** Modern React dashboard with live signals, reasonings, TradingView overlays, and outcome analytics.
+- **DevOps-Ready:** Docker Compose for easy orchestration and local dev; supports CI/CD and scaling.
+- **Extendable & Explainable:** Add new agents, swap LLMs, and audit all agent decisions with clear reasoning chains.
+
+---
+---
+
+## 🏗️ Process Architecture
+
+```mermaid
+graph TD
+    A[Market Event/Price Tick] --> B[ChartAnalyst]
+    A --> C[MarketSentinel]
+    A --> D[MacroForecaster]
+    B --> E[RiskManager]
+    C --> E
+    D --> E
+    E --> F[TacticBot]
+    F --> G[PlatformPilot]
+    G --> H[PostgreSQL DB]
+    G --> I[Frontend Dashboard]
+```
+
+
+**Flow:**  
+1. New market event → published to event bus  
+2. Specialist agents analyze and emit signals  
+3. RiskManager aggregates and evaluates  
+4. TacticBot decides entry/exit  
+5. PlatformPilot triggers trade, logs, and updates frontend
+
+---
+
 ### ⚙️ Architecture Overview
 
 ```
@@ -39,7 +78,35 @@ Each agent lives in `backend/agents/<agent_name>/`, and uses:
 * **Shared Event Bus (Redis)** for coordination
 * **Postgres DB** to persist signals and outcomes
 
+* | Agent              | Model Example      | Description                                                                 |
+|--------------------|-------------------|-----------------------------------------------------------------------------|
+| ChartAnalyst       | Mistral, Llama    | Analyzes price charts, detects patterns/zones, publishes technical signals  |
+| RiskManager        | Kimi K2, Claude   | Consumes signals, applies risk logic, outputs sizes/stop-loss/risk metrics  |
+| MarketSentinel     | Qwen3, GPT-4      | Monitors volatility, news, market regimes, raises alerts                    |
+| MacroForecaster    | TNG Chimera       | Assesses macro/news impact, forecasts directional bias                      |
+| TacticBot          | GLM, Horizon      | Aggregates all signals, triggers entry/exit, encodes trade tactics          |
+| PlatformPilot      | Kimi Dev 72B      | Logs actions, triggers platform automation, serves as audit & automation    |
+
 ---
+## 🔗 Event Bus Flow
+
+- All agent communication is via Redis Pub/Sub (or Kafka).
+- New market event → bus → specialist agents consume → output signals → bus → downstream agents consume (event loop).
+- Orchestrator listens, aggregates, and finalizes trade actions.
+
+Example event channels:
+- `market_events`, `chartanalyst_out`, `riskmanager_out`, `final_signals`, etc.
+
+---
+**PostgreSQL (or TimescaleDB)**
+
+- `agents`: Registered agents, models, status
+- `trade_signals`: Each agent’s signal, raw and processed
+- `trade_outcomes`: Actual trade results, PnL, success
+- `macro_events`: Global news/context per signal
+
+---
+
 
 ### 🚀 Quickstart
 
@@ -145,12 +212,28 @@ agentic-trading/
 
 ---
 
-### 🧠 License & Credits
+## 🙋 FAQ
 
-MIT Licensed. Powered by:
+**Q: Can I use my own LLMs/Quant libraries?**  
+A: Yes, just update agent logic.
 
-* [LangGraph](https://github.com/langchain-ai/langgraph)
-* [Mistral via OpenRouter](https://openrouter.ai/)
-* [Tavily Search](https://www.tavily.com/)
-* [FastAPI](https://fastapi.tiangolo.com/)
-* [Docker](https://www.docker.com/)
+**Q: Can it run on the cloud?**  
+A: Yes, deploy each service as a container on any cloud infra.
+
+**Q: Can I add more agents?**  
+A: Yes! The architecture is designed for modular growth.
+
+---
+
+## 🤝 Credits
+
+Built by [martin861101](https://github.com/martin861101) and contributors.
+
+---
+
+**Questions? PRs? Feature Requests? [Open an issue!](https://github.com/martin861101/agentic-ai-trading-system/issues)**
+
+---
+
+This README is ready for production and onboarding contributors.  
+Copy, edit, and enjoy building your agentic AI trading platform!
