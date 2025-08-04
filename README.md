@@ -78,7 +78,11 @@ Each agent lives in `backend/agents/<agent_name>/`, and uses:
 * **Shared Event Bus (Redis)** for coordination
 * **Postgres DB** to persist signals and outcomes
 
-* | Agent              | Model Example      | Description                                                                 |
+
+---
+## 🧠 Agents & Their Roles
+
+| Agent              | Model Example      | Description                                                                 |
 |--------------------|-------------------|-----------------------------------------------------------------------------|
 | ChartAnalyst       | Mistral, Llama    | Analyzes price charts, detects patterns/zones, publishes technical signals  |
 | RiskManager        | Kimi K2, Claude   | Consumes signals, applies risk logic, outputs sizes/stop-loss/risk metrics  |
@@ -87,7 +91,11 @@ Each agent lives in `backend/agents/<agent_name>/`, and uses:
 | TacticBot          | GLM, Horizon      | Aggregates all signals, triggers entry/exit, encodes trade tactics          |
 | PlatformPilot      | Kimi Dev 72B      | Logs actions, triggers platform automation, serves as audit & automation    |
 
+**Each agent is a REST API container with a clear JSON contract.**
+
 ---
+
+
 ## 🔗 Event Bus Flow
 
 - All agent communication is via Redis Pub/Sub (or Kafka).
